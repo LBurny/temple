@@ -9,13 +9,15 @@
 #!date=2026-08-20
 
 [Rule]
-# ---------- 埋点/统计与外部第三方 (整域/整路径屏蔽,无副作用) ----------
-# ux.21cn.com 天翼云盘腾讯灯塔(Beacon)统计 SDK: 行为上报+可视化埋点任务
-URL-REGEX,"^https?:\/\/ux\.21cn\.com\/(pb\/appReportRest|visualizationEvent)\/?",REJECT,extended-matching
-# 云图/授权分类统计 (api.yuntu.21cn.com)
-URL-REGEX,"^https?:\/\/api\.yuntu\.21cn\.com\/",REJECT,extended-matching
-# 电信生活服务/外部配置 (e.dlife.cn)
-URL-REGEX,"^https?:\/\/e\.dlife\.cn\/",REJECT,extended-matching
+# ---------- 纯统计/外部域名 整域拦截 (无需 MITM) ----------
+# ux.21cn.com 天翼云盘腾讯灯塔(Beacon)统计 SDK: 行为上报 + 可视化埋点任务下发
+DOMAIN,ux.21cn.com,REJECT-NO-DROP
+# 云图/授权分类统计域名
+DOMAIN,api.yuntu.21cn.com,REJECT-NO-DROP
+# 电信生活服务/外部配置域名
+DOMAIN,e.dlife.cn,REJECT-NO-DROP
+
+# ---------- 埋点/采集路径 (业务主域名,需 MITM,路径级 REJECT) ----------
 # 用户行为采集
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/collectRecords\.action",REJECT,extended-matching
 # 用户行为加密上报 (v2Report)
@@ -27,7 +29,7 @@ URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/getAttributionByIp\.action",REJECT,e
 # 记录上报 (埋点)
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/listRecords\.action",REJECT,extended-matching
 
-# ---------- 广告位/推广位接口 (屏蔽后对应卡片消失) ----------
+# ---------- 广告位/推广位 (屏蔽后对应卡片消失) ----------
 # 开屏广告
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getOpenscreenBanners\.action",REJECT,extended-matching
 # 首页轮播广告
@@ -56,4 +58,4 @@ URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/share\/getOwnerSubscribeShare\.actio
 URL-REGEX,"^https?:\/\/cloud\.189\.cn\/(include\/splash\/splashconfig\.xml|download\/client\/configs\/cloud_router\.json)",REJECT,extended-matching
 
 [MITM]
-hostname = %APPEND% api.cloud.189.cn, cloud.189.cn, *.21cn.com, e.dlife.cn
+hostname = %APPEND% api.cloud.189.cn, cloud.189.cn

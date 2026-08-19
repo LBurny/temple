@@ -1,0 +1,50 @@
+#!name=天翼云盘去广告
+#!desc=移除开屏广告、首页轮播广告、各页面Banner横幅、我的页推荐位、相册推荐卡片、分享页推荐、收集有奖卡片推广；屏蔽行为上报/埋点与统计域名。不影响登录、列表、上传、预览等核心功能。
+#!author=LBurny[https://github.com/LBurny/temple]
+#!icon=https://appimg2.dbankcdn.com/application/icon144/202208/2829f6c24a5e4bd9b52e64558d34df03.png
+#!category=OfficialModule
+#!openUrl=https://apps.apple.com/cn/app/id471636624
+#!tag=去广告
+#!homepage=https://github.com/LBurny/temple
+#!date=2026-08-20 02:30:00
+
+# ============================================================
+# 数据来源：天翼云盘 11.1.0 (iOS) 抓包清单，见 temple/surge/ 下 README
+# 说明：业务主域名 api.cloud.189.cn 不做整域屏蔽，仅按广告/埋点接口做路径级处理
+# ============================================================
+
+# ---- 纯统计域名整域拦截（无需 MITM，防止误伤业务）----
+# ux.21cn.com 为天翼云盘腾讯灯塔(Beacon)埋点上报域名：
+#   /pb/appReportRest/*  行为上报  /visualizationEvent/*  可视化埋点任务下发
+[Rule]
+DOMAIN,ux.21cn.com,REJECT-NO-DROP,extended-matching,pre-matching
+
+# ---- 埋点/采集接口路径级 REJECT（需 MITM 解密后按路径拦截）----
+# 行为上报（加密）、行为采集、登录信息采集、IP归属/广告归因，均只影响统计不干扰功能
+[URL Rewrite]
+# 行为上报埋点（加密）
+^https:\/\/api\.cloud\.189\.cn\/v2Report\/userActionReportEncrypt\.action - reject
+# 行为采集埋点
+^https:\/\/api\.cloud\.189\.cn\/collectRecords\.action - reject
+# 登录/场景信息采集（上传手机号、设备型号、IP 等）
+^https:\/\/api\.cloud\.189\.cn\/userInventoryCollect - reject
+# IP 归属查询（广告归因/推送定位）
+^https:\/\/api\.cloud\.189\.cn\/getAttributionByIp\.action - reject
+
+# ---- 广告接口 Map Local 返回空 JSON，屏蔽广告且不让 App 报错 ----
+# 开屏广告 getOpenscreenBanners
+# 首页轮播图 getCarouselAds
+# 我的页推荐位 getMyPageRecommendedPositionList
+# 各页面 Banner(getPageBanners serviceType=5/37/55/87…) 与首页皮肤推广(getHomePageSkinBanner)
+^https:\/\/api\.cloud\.189\.cn\/guns\/(?:getOpenscreenBanners|getCarouselAds|getMyPageRecommendedPositionList|getHomePageSkinBanner)\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+^https:\/\/api\.cloud\.189\.cn\/guns\/getPageBanners\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 收集有奖卡片推广（首页/我的页悬浮收集卡）
+^https:\/\/api\.cloud\.189\.cn\/guns\/collectLabelCard\/getRecCollectLabelCardList\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 相册精选推荐卡片
+^https:\/\/api\.cloud\.189\.cn\/album\/listRecommendCards\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# 分享页推荐资源 / 订阅推广
+^https:\/\/api\.cloud\.189\.cn\/share\/(?:getRecResourceShare|getOwnerSubscribeShare)\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+
+# ---- MITM 解密 hostname（仅业务主域名，供路径级规则使用）----
+[MITM]
+hostname = %APPEND% api.cloud.189.cn
