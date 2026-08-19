@@ -1,50 +1,59 @@
 #!name=天翼云盘去广告
-#!desc=移除开屏广告、首页轮播广告、各页面Banner横幅、我的页推荐位、相册推荐卡片、分享页推荐、收集有奖卡片推广；屏蔽行为上报/埋点与统计域名。不影响登录、列表、上传、预览等核心功能。
+#!desc=移除天翼云盘(189.cn)开屏广告、页内广告、轮播/推荐位、首页横幅、分享推荐与第三方统计埋点。
 #!author=LBurny[https://github.com/LBurny/temple]
-#!icon=https://appimg2.dbankcdn.com/application/icon144/202208/2829f6c24a5e4bd9b52e64558d34df03.png
-#!category=OfficialModule
+#!icon=https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/189.png
+#!category=BetaModule
 #!openUrl=https://apps.apple.com/cn/app/id471636624
 #!tag=去广告
-#!homepage=https://github.com/LBurny/temple
-#!date=2026-08-20 02:30:00
+#!system=iOS
+#!date=2026-08-20
 
-# ============================================================
-# 数据来源：天翼云盘 11.1.0 (iOS) 抓包清单，见 temple/surge/ 下 README
-# 说明：业务主域名 api.cloud.189.cn 不做整域屏蔽，仅按广告/埋点接口做路径级处理
-# ============================================================
-
-# ---- 纯统计域名整域拦截（无需 MITM，防止误伤业务）----
-# ux.21cn.com 为天翼云盘腾讯灯塔(Beacon)埋点上报域名：
-#   /pb/appReportRest/*  行为上报  /visualizationEvent/*  可视化埋点任务下发
 [Rule]
-DOMAIN,ux.21cn.com,REJECT-NO-DROP,extended-matching,pre-matching
+# ---------- 埋点/统计与外部第三方 (整域/整路径屏蔽,无副作用) ----------
+# ux.21cn.com 天翼云盘腾讯灯塔(Beacon)统计 SDK: 行为上报+可视化埋点任务
+URL-REGEX,"^https?:\/\/ux\.21cn\.com\/(pb\/appReportRest|visualizationEvent)\/?",REJECT,extended-matching
+# 云图/授权分类统计 (api.yuntu.21cn.com)
+URL-REGEX,"^https?:\/\/api\.yuntu\.21cn\.com\/",REJECT,extended-matching
+# 电信生活服务/外部配置 (e.dlife.cn)
+URL-REGEX,"^https?:\/\/e\.dlife\.cn\/",REJECT,extended-matching
+# 用户行为采集
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/collectRecords\.action",REJECT,extended-matching
+# 用户行为加密上报 (v2Report)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/v2Report\/userActionReportEncrypt\.action",REJECT,extended-matching
+# 登录/场景信息采集 (上传手机号、设备型号、IP 等)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/userInventoryCollect",REJECT,extended-matching
+# IP 归属查询 (广告归因/推送定位)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/getAttributionByIp\.action",REJECT,extended-matching
+# 记录上报 (埋点)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/listRecords\.action",REJECT,extended-matching
 
-# ---- 埋点/采集接口路径级 REJECT（需 MITM 解密后按路径拦截）----
-# 行为上报（加密）、行为采集、登录信息采集、IP归属/广告归因，均只影响统计不干扰功能
-[URL Rewrite]
-# 行为上报埋点（加密）
-^https:\/\/api\.cloud\.189\.cn\/v2Report\/userActionReportEncrypt\.action - reject
-# 行为采集埋点
-^https:\/\/api\.cloud\.189\.cn\/collectRecords\.action - reject
-# 登录/场景信息采集（上传手机号、设备型号、IP 等）
-^https:\/\/api\.cloud\.189\.cn\/userInventoryCollect - reject
-# IP 归属查询（广告归因/推送定位）
-^https:\/\/api\.cloud\.189\.cn\/getAttributionByIp\.action - reject
-
-# ---- 广告接口 Map Local 返回空 JSON，屏蔽广告且不让 App 报错 ----
-# 开屏广告 getOpenscreenBanners
-# 首页轮播图 getCarouselAds
-# 我的页推荐位 getMyPageRecommendedPositionList
-# 各页面 Banner(getPageBanners serviceType=5/37/55/87…) 与首页皮肤推广(getHomePageSkinBanner)
-^https:\/\/api\.cloud\.189\.cn\/guns\/(?:getOpenscreenBanners|getCarouselAds|getMyPageRecommendedPositionList|getHomePageSkinBanner)\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-^https:\/\/api\.cloud\.189\.cn\/guns\/getPageBanners\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-# 收集有奖卡片推广（首页/我的页悬浮收集卡）
-^https:\/\/api\.cloud\.189\.cn\/guns\/collectLabelCard\/getRecCollectLabelCardList\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+# ---------- 广告位/推广位接口 (屏蔽后对应卡片消失) ----------
+# 开屏广告
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getOpenscreenBanners\.action",REJECT,extended-matching
+# 首页轮播广告
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getCarouselAds\.action",REJECT,extended-matching
+# 各页面 Banner 广告 (全 serviceType)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getPageBanners\.action",REJECT,extended-matching
+# 首页皮肤/推广横幅
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getHomePageSkinBanner\.action",REJECT,extended-matching
+# "我的"页推荐位列表
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getMyPageRecommendedPositionList\.action",REJECT,extended-matching
+# 收藏有奖卡片推荐
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/collectLabelCard\/getRecCollectLabelCardList\.action",REJECT,extended-matching
 # 相册精选推荐卡片
-^https:\/\/api\.cloud\.189\.cn\/album\/listRecommendCards\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
-# 分享页推荐资源 / 订阅推广
-^https:\/\/api\.cloud\.189\.cn\/share\/(?:getRecResourceShare|getOwnerSubscribeShare)\.action data-type=text data="{}" status-code=200 header="Content-Type:application/json"
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/album\/listRecommendCards\.action",REJECT,extended-matching
+# 金刚位卡片 (首页推广位入口)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/api\/client\/myCards\.action",REJECT,extended-matching
+# 优惠券推广接口
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/coupon\/selectCoupons",REJECT,extended-matching
+# 绿色成长体系/推广活动列表
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/market\/getGreenLevelList\.action",REJECT,extended-matching
+# 分享页推荐资源
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/share\/getRecResourceShare\.action",REJECT,extended-matching
+# 分享页订阅推广
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/share\/getOwnerSubscribeShare\.action",REJECT,extended-matching
+# 闪屏广告配置源 (cloud.189.cn)
+URL-REGEX,"^https?:\/\/cloud\.189\.cn\/(include\/splash\/splashconfig\.xml|download\/client\/configs\/cloud_router\.json)",REJECT,extended-matching
 
-# ---- MITM 解密 hostname（仅业务主域名，供路径级规则使用）----
 [MITM]
-hostname = %APPEND% api.cloud.189.cn
+hostname = %APPEND% api.cloud.189.cn, cloud.189.cn, *.21cn.com, e.dlife.cn
