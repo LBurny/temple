@@ -12,6 +12,8 @@
 # ---------- 埋点/统计 (安全屏蔽,无副作用) ----------
 # App 使用统计上报 (ux.21cn.com 为第三方统计 SDK)
 URL-REGEX,"^https?:\/\/ux\.21cn\.com\/(pb\/appReportRest|visualizationEvent)\/?",REJECT,extended-matching
+# 推送埋点上报 (client-push 独立域名,纯统计)
+DOMAIN,client-push.21cn.com,REJECT-NO-DROP
 # 云图/授权分类统计
 URL-REGEX,"^https?:\/\/api\.yuntu\.21cn\.com\/",REJECT,extended-matching
 # 电信生活服务/外部配置
@@ -42,6 +44,14 @@ URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getCarouselAds\.action",REJECT
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getMyPageRecommendedPositionList\.action",REJECT,extended-matching
 # 相册推荐卡片
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/album\/listRecommendCards\.action",REJECT,extended-matching
+# 收藏标签卡片推荐位 (官方订阅号推广视频,纯推广内容)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/collectLabelCard\/getCollectLabelCardList\.action",REJECT,extended-matching
+# 金刚位卡片 (首页推广位开关/入口)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/api\/client\/myCards\.action",REJECT,extended-matching
+# 优惠券推广接口
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/coupon\/selectCoupons",REJECT,extended-matching
+# 绿色成长体系/推广活动列表
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/market\/getGreenLevelList\.action",REJECT,extended-matching
 # 推荐资源分享
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/share\/getRecResourceShare\.action",REJECT,extended-matching
 # 会员/Logo 标识 (屏蔽后可能不显示 VIP 图标)
