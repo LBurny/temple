@@ -1,8 +1,11 @@
 #!name=天翼云盘去广告
 #!desc=移除天翼云盘(189.cn)开屏广告、页内广告、首页横幅、相册推荐与第三方统计埋点。
-#!system=iOS
-#!tag=去广告,天翼云盘
 #!author=LBurny[https://github.com/LBurny]
+#!icon=https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/189.png
+#!category=BetaModule
+#!openUrl=https://apps.apple.com/app/id599155000
+#!tag=去广告
+#!system=iOS
 #!date=2026-08-20
 
 [Rule]
