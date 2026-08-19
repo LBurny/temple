@@ -1,5 +1,5 @@
 #!name=天翼云盘去广告
-#!desc=移除天翼云盘(189.cn)开屏广告、页内广告、首页横幅、相册推荐与第三方统计埋点。
+#!desc=移除天翼云盘(189.cn)开屏广告、页内广告、轮播/推荐位、首页横幅与第三方统计埋点。
 #!author=LBurny[https://github.com/LBurny]
 #!icon=https://raw.githubusercontent.com/luestr/IconResource/main/App_icon/120px/189.png
 #!category=BetaModule
@@ -20,6 +20,14 @@ URL-REGEX,"^https?:\/\/e\.dlife\.cn\/",REJECT,extended-matching
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/collectRecords\.action",REJECT,extended-matching
 # token 上报
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/reportToken\.action",REJECT,extended-matching
+# 用户行为加密上报 (v2Report)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/v2Report\/userActionReportEncrypt\.action",REJECT,extended-matching
+# IP 归因统计
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/getAttributionByIp\.action",REJECT,extended-matching
+# 收藏卡片推荐位统计
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/collectLabelCard\/getRecCollectLabelCardList\.action",REJECT,extended-matching
+# 记录上报 (埋点)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/listRecords\.action",REJECT,extended-matching
 
 # ---------- 广告位/推广位 (屏蔽后对应卡片消失) ----------
 # 开屏广告
@@ -28,8 +36,14 @@ URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getOpenscreenBanners\.action",
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getPageBanners\.action",REJECT,extended-matching
 # 首页皮肤/推广横幅
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getHomePageSkinBanner\.action",REJECT,extended-matching
+# 轮播广告位
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getCarouselAds\.action",REJECT,extended-matching
+# "我的"页推荐位列表
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getMyPageRecommendedPositionList\.action",REJECT,extended-matching
 # 相册推荐卡片
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/album\/listRecommendCards\.action",REJECT,extended-matching
+# 推荐资源分享
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/share\/getRecResourceShare\.action",REJECT,extended-matching
 # 会员/Logo 标识 (屏蔽后可能不显示 VIP 图标)
 URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/order\/(queryUserLogo|getInValidUserLogo)\.action",REJECT,extended-matching
 # 闪屏广告配置源
