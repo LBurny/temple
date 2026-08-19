@@ -1,0 +1,36 @@
+#!name=天翼云盘去广告
+#!desc=移除天翼云盘(189.cn)开屏广告、页内广告、首页横幅、相册推荐与第三方统计埋点。
+#!system=iOS
+#!tag=去广告,天翼云盘
+#!author=LBurny[https://github.com/LBurny]
+#!date=2026-08-20
+
+[Rule]
+# ---------- 埋点/统计 (安全屏蔽,无副作用) ----------
+# App 使用统计上报 (ux.21cn.com 为第三方统计 SDK)
+URL-REGEX,"^https?:\/\/ux\.21cn\.com\/(pb\/appReportRest|visualizationEvent)\/?",REJECT,extended-matching
+# 云图/授权分类统计
+URL-REGEX,"^https?:\/\/api\.yuntu\.21cn\.com\/",REJECT,extended-matching
+# 电信生活服务/外部配置
+URL-REGEX,"^https?:\/\/e\.dlife\.cn\/",REJECT,extended-matching
+# 用户行为采集
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/collectRecords\.action",REJECT,extended-matching
+# token 上报
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/reportToken\.action",REJECT,extended-matching
+
+# ---------- 广告位/推广位 (屏蔽后对应卡片消失) ----------
+# 开屏广告
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getOpenscreenBanners\.action",REJECT,extended-matching
+# 页面内广告位 (全 serviceType)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getPageBanners\.action",REJECT,extended-matching
+# 首页皮肤/推广横幅
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/guns\/getHomePageSkinBanner\.action",REJECT,extended-matching
+# 相册推荐卡片
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/album\/listRecommendCards\.action",REJECT,extended-matching
+# 会员/Logo 标识 (屏蔽后可能不显示 VIP 图标)
+URL-REGEX,"^https?:\/\/api\.cloud\.189\.cn\/order\/(queryUserLogo|getInValidUserLogo)\.action",REJECT,extended-matching
+# 闪屏广告配置源
+URL-REGEX,"^https?:\/\/cloud\.189\.cn\/(include\/splash\/splashconfig\.xml|download\/client\/configs\/cloud_router\.json)",REJECT,extended-matching
+
+[MITM]
+hostname = %APPEND% *.cloud.189.cn, *.21cn.com, e.dlife.cn
