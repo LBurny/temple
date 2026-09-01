@@ -1,0 +1,49 @@
+{
+  "name": "面板合集",
+  "description": "𝐔𝐩𝐝𝐚𝐭𝐞: 2026.01.17 12:03",
+  "dns": {},
+  "scriptings": [
+    {
+      "generic": {
+        "name": "今日黄历&节假日倒数",
+        "script_url": "https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Script/Almanac.js",
+        "timeout": 10
+      }
+    },
+    {
+      "generic": {
+        "name": "网络信息",
+        "script_url": "https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Script/NetworkInfo.js",
+        "timeout": 10
+      }
+    },
+    {
+      "generic": {
+        "name": "流媒体&AI服务解锁检测",
+        "script_url": "https://raw.githubusercontent.com/jnlaoshu/MySelf/main/Script/ServiceDetection.js",
+        "timeout": 15
+      }
+    }
+  ],
+  "panels": [
+    {
+      "name": "今日黄历&节假日倒数",
+      "script_name": "今日黄历&节假日倒数",
+      "update_interval": 1800
+    },
+    {
+      "name": "网络信息",
+      "title": "",
+      "content": "",
+      "style": "info",
+      "script_name": "网络信息",
+      "update_interval": 1
+    },
+    {
+      "name": "流媒体&AI服务解锁检测",
+      "title": "流媒体&AI服务解锁检测",
+      "content": "请刷新面板",
+      "script_name": "流媒体&AI服务解锁检测"
+    }
+  ]
+}
