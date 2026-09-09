@@ -1,5 +1,0 @@
-# Reddit 去广告 jq 表达式 (从 Reddit去广告.stoverride 提取备份)
-# 来源: QingRex/LoonKissSurge Surge/Official/Reddit 去广告.sgmodule [Body Rewrite]
-# 用法: 放入 Stash 覆写的 http.body-rewrite, 动作 response-jq
-# 语法已本地 jq 验证通过 (NSFW 关闭/评论区广告清空/AdPost 与 adPayload 剔除)
-walk( if type == "object" then (if .isNsfw == true then .isNsfw = false else . end) | (if .isNsfwMediaBlocked == true then .isNsfwMediaBlocked = false else . end) | (if .isNsfwContentShown == false then .isNsfwContentShown = true else . end) | (if (.commentsPageAds | type == "array") then (.commentsPageAds = []) else . end) | (if ( (.node | type == "object") and (.node.cells | type == "array") and (.node.cells | any(.__typename? == "AdMetadataCell" or .isAdPost? == true)) ) then empty else . end) | (if (.node | type == "object") and (.node.adPayload | type == "object") then empty else . end) | (if .__typename == "AdPost" then empty else . end) else . end)
