@@ -1,6 +1,6 @@
 name: Reddit去广告
 desc: |-
-  过滤信息流/评论区广告, 关 NSFW 提示, 自动开启翻译(zh-hans)
+  过滤信息流/评论区广告, 关 NSFW 提示, 自动开启翻译
   来源: xream/LoonKissSurge (Surge 模块), 修复 script-hub 转换缺陷后供 Stash 使用
 author: xream
 icon: https://github.com/Toperlock/Quantumult/raw/main/icon/Doraemon/Doraemon-1015.png
@@ -16,8 +16,8 @@ http:
     - gql-fed.reddit.com
 
   header-rewrite:
-    - '^https:\/\/gql(-fed)?\.reddit\.com\/ request-del x-reddit-translations'
-    - '^https:\/\/gql(-fed)?\.reddit\.com\/ request-add x-reddit-translations "enabled, seo, zh-hans"'
+    - '^https://gql(-fed)?\.reddit\.com/ request-del x-reddit-translations'
+    - '^https://gql(-fed)?\.reddit\.com/ request-add x-reddit-translations enabled'
 
   body-rewrite:
     - '^https?:\/\/gql(-fed)?\.reddit\.com response-jq walk( if type == "object" then (if .isNsfw == true then .isNsfw = false else . end) | (if .isNsfwMediaBlocked == true then .isNsfwMediaBlocked = false else . end) | (if .isNsfwContentShown == false then .isNsfwContentShown = true else . end) | (if (.commentsPageAds | type == "array") then (.commentsPageAds = []) else . end) | (if ( (.node | type == "object") and (.node.cells | type == "array") and (.node.cells | any(.__typename? == "AdMetadataCell" or .isAdPost? == true)) ) then empty else . end) | (if (.node | type == "object") and (.node.adPayload | type == "object") then empty else . end) | (if .__typename == "AdPost" then empty else . end) else . end)'
