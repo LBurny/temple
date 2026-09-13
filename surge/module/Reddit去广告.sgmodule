@@ -1,6 +1,6 @@
 #!name=Reddit 去广告
-#!desc=过滤推广, 关 NSFW 提示, 自动开启翻译(JQ 保守版)\n广告剔除仅在数组层进行, adPayload 置 null 保留对象结构, 兼容新版 feed 结构(r/ClaudeAI 等社区页不再空白)\n基于 xream/LoonKissSurge 官方模块
-#!author=xream, 保守化修复 by LBurny
+#!desc=过滤推广, 关 NSFW 提示, 自动开启翻译
+#!author=xream
 #!category=LBurny
 #!arguments=NSFW:"Nsfw",TRANSLATION:"http-request",TRANSLATION_VALUE:"enabled, seo, zh-hans"
 #!arguments-desc=\n1️⃣ NSFW\n\n填写 Nsfw 时, 表示关闭 NSFW 提示, 其他值表示恢复默认行为\n\n2️⃣ TRANSLATION\n\n填写 http-request 时, 表示开启自动翻译, # 表示关闭自动翻译.\n⚠️ 由于无法区分首次原始请求和手动点击翻译的请求, 开启之后 App 内切换功能就无效了...\n\n3️⃣ TRANSLATION_VALUE\n\n如果 Reddit 改了行为, 可以自己改这个值
