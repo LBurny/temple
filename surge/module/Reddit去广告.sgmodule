@@ -15,7 +15,7 @@ hostname = %APPEND%, gql.reddit.com, gql-fed.reddit.com
 
 [Body Rewrite]
 
-http-response-jq ^https?:\/\/gql(-fed)?\.reddit\.com 'walk( if type == "object" then (if .is{{{NSFW}}} == true then .is{{{NSFW}}} = false else . end) | (if .is{{{NSFW}}}MediaBlocked == true then .is{{{NSFW}}}MediaBlocked = false else . end) | (if .is{{{NSFW}}}ContentShown == false then .is{{{NSFW}}}ContentShown = true else . end) | (if (.commentsPageAds | type == "array") then (.commentsPageAds = []) else . end) | (if (.node | type == "object") and (.node.adPayload | type == "object") then .node.adPayload = null else . end) elif type == "array" then map(select((type != "object") or ((.__typename? != "AdPost") and (.__typename? != "AdMetadataCell") and (.isAdPost? != true) and (((.node.cells? | type) != "array") or ((.node.cells | any(.__typename? == "AdMetadataCell" or .isAdPost? == true)) | not))))) else . end)'
+http-response-jq ^https?:\/\/gql(-fed)?\.reddit\.com 'walk( if type == "object" then (if .is{{{NSFW}}} == true then .is{{{NSFW}}} = false else . end) | (if .is{{{NSFW}}}MediaBlocked == true then .is{{{NSFW}}}MediaBlocked = false else . end) | (if .is{{{NSFW}}}ContentShown == false then .is{{{NSFW}}}ContentShown = true else . end) | (if (.commentsPageAds | type) == "array" then .commentsPageAds = [] else . end) | (if (.elements | type) == "object" and (.elements.edges | type) == "array" then .elements.edges |= map(select( (((.node? // "NONOBJ") | type) != "object") or ( (((.node.__typename? // "") != "AdPost")) and ( ((.node.cells? // []) | ([.[]? | .__typename?] | index("AdMetadataCell"))) == null ) and ( ((.node.adPayload? // null) == null) ) ))) else . end) else . end)'
 
 [Header Rewrite]
 
