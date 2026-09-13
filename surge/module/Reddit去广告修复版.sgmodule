@@ -1,0 +1,23 @@
+#!name=Reddit 去广告 (修复版)
+#!desc=过滤推广, 关 NSFW 提示, 自动开启翻译(JQ 保守版)\n基于 xream/LoonKissSurge 官方模块, 修复部分社区(r/ClaudeAI 等)内容全空: 原 jq 用 empty 删除挂广告载荷的整个对象, 新版 feed 把元素挂在对象键下, 删键导致整个列表不渲染。保守化: 广告只在数组层剔除, adPayload 置 null 保留对象结构。
+#!author=xream, 保守化修复 by LBurny
+#!category=LBurny
+#!arguments=NSFW:"Nsfw",TRANSLATION:"http-request",TRANSLATION_VALUE:"enabled, seo, zh-hans"
+#!arguments-desc=\n1️⃣ NSFW\n\n填写 Nsfw 时, 表示关闭 NSFW 提示, 其他值表示恢复默认行为\n\n2️⃣ TRANSLATION\n\n填写 http-request 时, 表示开启自动翻译, # 表示关闭自动翻译.\n⚠️ 由于无法区分首次原始请求和手动点击翻译的请求, 开启之后 App 内切换功能就无效了...\n\n3️⃣ TRANSLATION_VALUE\n\n如果 Reddit 改了行为, 可以自己改这个值
+
+[General]
+
+force-http-engine-hosts = %APPEND% gql.reddit.com, gql-fed.reddit.com
+
+[MITM]
+
+hostname = %APPEND%, gql.reddit.com, gql-fed.reddit.com
+
+[Body Rewrite]
+
+http-response-jq ^https?:\/\/gql(-fed)?\.reddit\.com 'walk( if type == "object" then (if .is{{{NSFW}}} == true then .is{{{NSFW}}} = false else . end) | (if .is{{{NSFW}}}MediaBlocked == true then .is{{{NSFW}}}MediaBlocked = false else . end) | (if .is{{{NSFW}}}ContentShown == false then .is{{{NSFW}}}ContentShown = true else . end) | (if (.commentsPageAds | type == "array") then (.commentsPageAds = []) else . end) | (if (.node | type == "object") and (.node.adPayload | type == "object") then .node.adPayload = null else . end) elif type == "array" then map(select((type != "object") or ((.__typename? != "AdPost") and (.__typename? != "AdMetadataCell") and (.isAdPost? != true) and (((.node.cells? | type) != "array") or ((.node.cells | any(.__typename? == "AdMetadataCell" or .isAdPost? == true)) | not))))) else . end)'
+
+[Header Rewrite]
+
+{{{TRANSLATION}}} ^https:\/\/gql(-fed)?\.reddit\.com\/ header-del x-reddit-translations
+{{{TRANSLATION}}} ^https:\/\/gql(-fed)?\.reddit\.com\/ header-add x-reddit-translations "{{{TRANSLATION_VALUE}}}"
