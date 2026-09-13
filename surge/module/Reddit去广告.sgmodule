@@ -1,5 +1,5 @@
-#!name=Reddit 去广告 (修复版)
-#!desc=过滤推广, 关 NSFW 提示, 自动开启翻译(JQ 保守版)\n基于 xream/LoonKissSurge 官方模块, 修复部分社区(r/ClaudeAI 等)内容全空: 原 jq 用 empty 删除挂广告载荷的整个对象, 新版 feed 把元素挂在对象键下, 删键导致整个列表不渲染。保守化: 广告只在数组层剔除, adPayload 置 null 保留对象结构。
+#!name=Reddit 去广告
+#!desc=过滤推广, 关 NSFW 提示, 自动开启翻译(JQ 保守版)\n广告剔除仅在数组层进行, adPayload 置 null 保留对象结构, 兼容新版 feed 结构(r/ClaudeAI 等社区页不再空白)\n基于 xream/LoonKissSurge 官方模块
 #!author=xream, 保守化修复 by LBurny
 #!category=LBurny
 #!arguments=NSFW:"Nsfw",TRANSLATION:"http-request",TRANSLATION_VALUE:"enabled, seo, zh-hans"
