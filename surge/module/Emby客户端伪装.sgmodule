@@ -1,0 +1,24 @@
+#!name=Emby 客户端伪装
+#!desc=把 Emby 请求头里的客户端标识改写成服务端白名单内的客户端，绕过服务器的客户端限制。需要开启 MITM 并信任证书。
+#!author=LBurny[https://github.com/LBurny/temple]
+#!category=LBurny
+#!tag=Emby,工具
+#!system=iOS
+#!date=2026-09-26
+#!arguments=CLIENT:"Filebar"
+#!arguments-desc=伪装成哪个客户端。必须填服务端白名单内的名字（区分大小写），可选：Filebar / SenPlayer / Yamby / Hills / Forward / Emby Web / Emby for iOS
+
+[MITM]
+hostname = %APPEND% emby3.69yun69.com
+
+[Header Rewrite]
+# 只替换 Client= 这一段的取值，Device / DeviceId / Version / Token 全部原样保留
+# 新版授权头（Emby 4.8+ 及第三方客户端）
+http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex X-Emby-Authorization Client="[^"]*" Client="{{{CLIENT}}}"
+# 旧版授权头（部分客户端仍在使用）
+http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex Authorization Client="[^"]*" Client="{{{CLIENT}}}"
+# 现代客户端会把客户端名单独下发一次，一并改写
+http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace X-Emby-Client {{{CLIENT}}}
+# 兜底：单引号 / 无引号写法（放在最后，前面已改好的不会再次命中）
+http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex X-Emby-Authorization Client=[^,"]+ Client="{{{CLIENT}}}"
+http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex Authorization Client=[^,"]+ Client="{{{CLIENT}}}"
