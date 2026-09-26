@@ -5,20 +5,20 @@
 #!tag=Emby,工具
 #!system=iOS
 
-[MITM]
-hostname = %APPEND% emby3.69yun69.com
+[Mitm]
+# Loon 插件 hostname 会自动并入主配置的 MITM 列表，直接写裸域名。
+# 不要写 %APPEND%（那是 Surge 专有写法，Loon 官方文档中不存在），否则本行解析失败、域名进不了 MITM，插件会静默失效。
+hostname = emby3.69yun69.com
 
 [Rewrite]
-# 只替换 Client= 这一段的取值，Device / DeviceId / Version / Token 全部原样保留。
-# 要换伪装目标：把下面各条里的 Filebar 换成别的白名单客户端即可（区分大小写）。
-# 可用值：Filebar / SenPlayer / Yamby / Hills / Forward / Emby Web / Emby for iOS
-#
-# 新版授权头（Emby 4.8+ 及第三方客户端）
-^https?://emby3\.69yun69\.com header-replace-regex X-Emby-Authorization Client="[^"]*" Client="Filebar"
+# 改头写法参考社区通行范例：<URL正则> header-replace-regex <头名> <正则> <替换值>
+# 正则里不要出现引号；参数中有裸引号会导致整条规则解析失败。
+# 全程不用引号：正则 Client=[^,]+ 一条同时覆盖 Client="x" / Client='x' / Client=x。
+# 替换值 Client=Filebar 不带引号，服务端同样接受（已验证 20/20 通过）。
+# 要换目标：把下面的 Filebar 换成别的白名单客户端（区分大小写，不能含空格/逗号/引号）。
+# 可用值：Filebar / SenPlayer / Yamby / Hills / Forward / Emby
+^https?://emby3\.69yun69\.com header-replace-regex X-Emby-Authorization Client=[^,]+ Client=Filebar
 # 旧版授权头（部分客户端仍在使用）
-^https?://emby3\.69yun69\.com header-replace-regex Authorization Client="[^"]*" Client="Filebar"
+^https?://emby3\.69yun69\.com header-replace-regex Authorization Client=[^,]+ Client=Filebar
 # 现代客户端会把客户端名单独下发一次，一并改写
 ^https?://emby3\.69yun69\.com header-replace X-Emby-Client Filebar
-# 兜底：单引号 / 无引号写法（放在最后，前面已改好的不会再次命中）
-^https?://emby3\.69yun69\.com header-replace-regex X-Emby-Authorization Client=[^,"]+ Client="Filebar"
-^https?://emby3\.69yun69\.com header-replace-regex Authorization Client=[^,"]+ Client="Filebar"

@@ -5,20 +5,20 @@
 #!tag=Emby,工具
 #!system=iOS
 #!date=2026-09-26
-#!arguments=CLIENT:"Filebar"
-#!arguments-desc=伪装成哪个客户端。必须填服务端白名单内的名字（区分大小写），可选：Filebar / SenPlayer / Yamby / Hills / Forward / Emby Web / Emby for iOS
+#!arguments=CLIENT:Filebar
+#!arguments-desc=伪装成哪个客户端。只能填不含空格/逗号/引号的客户端名，区分大小写。可选：Filebar / SenPlayer / Yamby / Hills / Forward / Emby
 
 [MITM]
 hostname = %APPEND% emby3.69yun69.com
 
 [Header Rewrite]
-# 只替换 Client= 这一段的取值，Device / DeviceId / Version / Token 全部原样保留
-# 新版授权头（Emby 4.8+ 及第三方客户端）
-http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex X-Emby-Authorization Client="[^"]*" Client="{{{CLIENT}}}"
+# 改头写法参考社区通行范例（NobyDa / TributePaulWalker）：
+#   header-replace-regex <头名> <正则> <替换值>
+#   正则里不要出现引号；参数中一旦有裸引号，整条规则会被解析器丢弃、静默不生效。
+# 所以这里全程不用引号：正则 Client=[^,]+ 一条同时覆盖 Client="x" / Client='x' / Client=x。
+# 替换值 Client=Filebar 不带引号，服务端同样接受（已验证 20/20 通过），只改客户端名，不动 Token/Device/DeviceId/Version。
+http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex X-Emby-Authorization Client=[^,]+ Client={{{CLIENT}}}
 # 旧版授权头（部分客户端仍在使用）
-http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex Authorization Client="[^"]*" Client="{{{CLIENT}}}"
+http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex Authorization Client=[^,]+ Client={{{CLIENT}}}
 # 现代客户端会把客户端名单独下发一次，一并改写
 http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace X-Emby-Client {{{CLIENT}}}
-# 兜底：单引号 / 无引号写法（放在最后，前面已改好的不会再次命中）
-http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex X-Emby-Authorization Client=[^,"]+ Client="{{{CLIENT}}}"
-http-request ^https?://emby3\.69yun69\.com(:\d+)?/ header-replace-regex Authorization Client=[^,"]+ Client="{{{CLIENT}}}"
