@@ -1,7 +1,7 @@
 /*
  * mextin-decode.js — Mextin 加密订阅解密脚本（Loon / Surge / Quantumult X 通用）
  * =============================================================================
- * 机制（逆向自公开的 speedcat.sub.decode.js）:
+ * 机制（来自 wiki.mextinnet.com「订阅加密」+ 墨鱼手记 speedcat.sub.decode.js 逆向）:
  *   订阅响应体 = Base64( nonce[12] || AES-256-GCM密文 || tag[16] )
  *   密钥       = SHA256(SUBSCRIPTION_PASSWORD)          // 32 字节，密码每机场不同
  *   解密后才是真正的 ss:// vmess:// 等明文节点列表
