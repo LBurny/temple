@@ -43,7 +43,7 @@ DOMAIN,httpdns.n.netease.com,REJECT-NO-DROP
 DOMAIN,httpdns.music.163.com,REJECT-NO-DROP
 [Map Local]
 # 左侧菜单按钮小红点 / 更新提示（新版 App 走 xeapi，原模块的 eapi 规则匹配不上）
-^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/[wx]?e?api\/(?:ios\/version|event\/(?:red\/point\/show|top\/get)|link\/position\/show\/strategy) data-type=text data="{}"
+^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/[wx]?e?api\/(?:ios\/version|event\/(?:red\/point\/show|top\/get|user\/publisher\/config)|link\/position\/show\/strategy|delivery\/(?:batch-deliver|deliver)|ad\/config|ad\/sniffing) data-type=text data="{}"
 
 ^https?:\/\/(ipv4|interface\d?)\.music\.163.com\/e?api\/ad data-type=text data="{}"
 # 今日运势 商城 Beat专区 音乐收藏家 | type:ACTIVITY | 低至5.2折
