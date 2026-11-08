@@ -1,4 +1,4 @@
-#!name=Bilibili-Enhance
+#!name=Bilibili增强
 #!desc=去掉视频详情(View)与评论区(comment)的请求重发，修复简介/评论加载，并用字节级过滤保留视频页广告清理；拦截 cm.bilibili.com / tanx.com 广告素材
 #!category=Advertisement
 #!arguments=动态最常访问:auto,创作中心:0,过滤置顶评论广告:1,空降助手:bilibili.airborne,空降助手策略:DIRECT,屏蔽P2P:DEST-PORT,日志等级:4
