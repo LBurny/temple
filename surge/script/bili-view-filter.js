@@ -137,6 +137,20 @@
     });
   }
 
+  // 入口：MainListReply —— 删 cm(11) / mixed_cards(27) / 置顶广告卡(28 里 type∈{3,5})
+  var TOPCARD_DROP = [3, 5];
+  function filterMainList(b, s, e) {
+    return rebuild(b, fields(b, s, e), function (f) {
+      if (f.no === 11 && f.wt === 2) return null;
+      if (f.no === 27) return null;
+      if (f.no === 28 && f.wt === 2) {
+        var sub = fields(b, f.vs, f.ve), t = 0, i;
+        for (i = 0; i < sub.length; i++) if (sub[i].no === 1 && sub[i].wt === 0) t = varintOf(b, sub[i]);
+        return TOPCARD_DROP.indexOf(t) >= 0 ? null : undefined;
+      }
+    });
+  }
+
   function run() {
     var body = $response.body;
     if (!body || body.length < 5) return $done({});
@@ -146,7 +160,10 @@
     if ((flag !== 0 && flag !== 1) || len !== b.length - 5) return $done({});
     var payload = b.subarray(5);
     if (flag === 1) payload = $utils.ungzip(payload);
-    var out = filterViewReply(payload, 0, payload.length);
+    var url = (typeof $request !== 'undefined' && $request && $request.url) || '';
+    var out = /\/MainList\b/.test(url)
+      ? filterMainList(payload, 0, payload.length)
+      : filterViewReply(payload, 0, payload.length);
     if (!out || out.length === payload.length) return $done({});
     var res = new Uint8Array(5 + out.length);
     res[0] = 0;
