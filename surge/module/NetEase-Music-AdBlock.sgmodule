@@ -41,9 +41,10 @@ DOMAIN,iadmat.nosdn.127.net,REJECT-NO-DROP
 DOMAIN,iadmatapk.nosdn.127.net,REJECT-NO-DROP
 DOMAIN,httpdns.n.netease.com,REJECT-NO-DROP
 DOMAIN,httpdns.music.163.com,REJECT-NO-DROP
+URL-REGEX,^https?://(?:interface\d?|ipv4)\.music\.163\.com/[wx]?e?api/ios/upgrade/get,REJECT
 [Map Local]
 # 左侧菜单按钮小红点 / 更新提示（新版 App 走 xeapi，原模块的 eapi 规则匹配不上）
-^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/[wx]?e?api\/(?:ios\/(?:version|upgrade\/get|upgrade\/state)|event\/(?:red\/point\/show|top\/get|user\/publisher\/config)|link\/position\/show\/strategy|delivery\/(?:batch-deliver|deliver)|ad\/config|ad\/sniffing) data-type=text data='{"code":200,"message":"ok","data":{"isUpgrade":false,"isForceUpgrade":false,"upgrade":false,"hasNewVersion":false,"hasUpgrade":false,"redDot":false,"redPoint":false,"showRedDot":false,"version":"9.5.97","newVersion":"9.5.97","latestVersion":"9.5.97","currentVersion":"9.5.97","upgradeContent":"","upgradeUrl":"","downloadUrl":"","forceUpgrade":false,"upgradeType":0,"upgradeVersion":""}}' status-code=200 header="Content-Type:application/json;charset=utf-8"
+^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/[wx]?e?api\/(?:ios\/(?:version|upgrade\/state)|event\/(?:red\/point\/show|top\/get|user\/publisher\/config)|link\/position\/show\/strategy|delivery\/(?:batch-deliver|deliver)|ad\/config|ad\/sniffing) data-type=text data='{"code":200,"message":"ok","data":{"isUpgrade":false,"isForceUpgrade":false,"upgrade":false,"hasNewVersion":false,"hasUpgrade":false,"redDot":false,"redPoint":false,"showRedDot":false,"version":"9.5.97","newVersion":"9.5.97","latestVersion":"9.5.97","currentVersion":"9.5.97","upgradeContent":"","upgradeUrl":"","downloadUrl":"","forceUpgrade":false,"upgradeType":0,"upgradeVersion":""}}' status-code=200 header="Content-Type:application/json;charset=utf-8"
 
 ^https?:\/\/(ipv4|interface\d?)\.music\.163.com\/e?api\/ad data-type=text data="{}"
 # 今日运势 商城 Beat专区 音乐收藏家 | type:ACTIVITY | 低至5.2折
