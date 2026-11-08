@@ -1,5 +1,5 @@
 #!name=General Enhanced
-#!desc=(📱 iOS版)(镜像自 VirgilClyne/GetSomeFries) 1.添加跳过代理部分段内容 2.添加返回真实IP段内容 3.添加不可MitM的域名，防止打断连接
+#!desc=1.添加跳过代理部分段内容 2.添加返回真实IP段内容 3.添加不可MitM的域名，防止打断连接
 #!author=VirgilClyne (镜像: LBurny)
 #!homepage=https://github.com/LBurny/temple/blob/main/surge/module/Fries-General.sgmodule
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Bypass.png
