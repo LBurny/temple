@@ -151,6 +151,28 @@
     });
   }
 
+  // 入口：DynAllReply —— 删 topic_list(3)，删 dynamic_list[1].list[1] 中 card_type∈{15 AD,18 LIVE_RCMD}
+  var DYN_DROP = [15, 18];
+  function filterDynItem(b, s, e) {
+    var fs = fields(b, s, e), t = 0, i;
+    for (i = 0; i < fs.length; i++) if (fs[i].no === 1 && fs[i].wt === 0) t = varintOf(b, fs[i]);
+    return DYN_DROP.indexOf(t) >= 0 ? null : b.subarray(s, e);
+  }
+  function filterDynList(b, s, e) {
+    return rebuild(b, fields(b, s, e), function (f) {
+      if (f.no === 1 && f.wt === 2) {
+        var it = filterDynItem(b, f.vs, f.ve);
+        return it === null ? null : undefined;
+      }
+    });
+  }
+  function filterDynAll(b, s, e) {
+    return rebuild(b, fields(b, s, e), function (f) {
+      if (f.no === 3) return null;                       // topic_list
+      if (f.no === 1 && f.wt === 2) return withValue(b, f, filterDynList(b, f.vs, f.ve));
+    });
+  }
+
   function run() {
     var body = $response.body;
     if (!body || body.length < 5) return $done({});
@@ -161,9 +183,10 @@
     var payload = b.subarray(5);
     if (flag === 1) payload = $utils.ungzip(payload);
     var url = (typeof $request !== 'undefined' && $request && $request.url) || '';
-    var out = /\/MainList\b/.test(url)
-      ? filterMainList(payload, 0, payload.length)
-      : filterViewReply(payload, 0, payload.length);
+    var out;
+    if (/\/MainList\b/.test(url)) out = filterMainList(payload, 0, payload.length);
+    else if (/\/DynAll\b/.test(url)) out = filterDynAll(payload, 0, payload.length);
+    else out = filterViewReply(payload, 0, payload.length);
     if (!out || out.length === payload.length) return $done({});
     var res = new Uint8Array(5 + out.length);
     res[0] = 0;
