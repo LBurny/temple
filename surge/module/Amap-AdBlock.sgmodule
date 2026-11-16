@@ -8,7 +8,7 @@
 #!loon_version=3.2.4(787)
 #!date=2026-02-22 06:04:15
 
-# 自维护副本（2026-11-16）：原 script-path 指向 kelee.one/Resource/JavaScript/... 已 404，
+# 2026-11-16：原 script-path 指向 kelee.one/Resource/JavaScript/... 已 404，
 # 脚本改自托管，其余规则与 QingRex/LoonKissSurge 上游逐字一致
 
 [Rule]
