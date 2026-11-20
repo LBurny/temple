@@ -4,6 +4,8 @@
 //   - type ∈ {18,29,37,55,63} 的模块整体删除
 //   - type == 3 (UGC_HEADLINE) 删除 headLine.label
 //   - type == 28 (RELATED_RECOMMEND) 删除广告卡（relate_card_type ∈ {4,5,6,7,11} / 有 cm_stock / basic_info 带 uniqueId）
+// 另：ViewReply[7] 是「视频页顶部广告卡」容器（bilibili.ad.v1.AdsControlDto + SourceContentDto），整段删除
+//     （2026-11-20 发现：KFC 商单/推广视频卡走这里，之前完全没拦截）
 (function () {
   var MOD_DROP = [18, 29, 37, 55, 63];
   var CARD_DROP = [4, 5, 6, 7, 11];
@@ -15,7 +17,7 @@
       x = b[p++]; n++;
       v += (x & 0x7f) * Math.pow(2, sh);
       sh += 7;
-      if (n > 8) throw new Error('varint overflow');
+      if (n > 10) throw new Error('varint overflow');
     } while (x & 0x80);
     return [v, p];
   }
@@ -87,7 +89,8 @@
   function filterRelates(b, s, e) {
     return rebuild(b, fields(b, s, e), function (f) {
       if (f.no === 1 && f.wt === 2) {
-        var c = filterCard(b, f.vs, f.ve);
+        var c;
+        try { c = filterCard(b, f.vs, f.ve); } catch (err) { return undefined; } // 单卡解析失败就原样保留
         return c === null ? null : withValue(b, f, c);
       }
     });
@@ -103,37 +106,44 @@
     var fs = fields(b, s, e), type = 0, i;
     for (i = 0; i < fs.length; i++) if (fs[i].no === 1 && fs[i].wt === 0) type = varintOf(b, fs[i]);
     if (MOD_DROP.indexOf(type) >= 0) return null;
-    return rebuild(b, fs, function (f) {
-      if (f.no === 22 && f.wt === 2 && type === 28) return withValue(b, f, filterRelates(b, f.vs, f.ve));
-      if (f.no === 5 && f.wt === 2 && type === 3) return withValue(b, f, stripHeadline(b, f.vs, f.ve));
+    try {
+      return rebuild(b, fs, function (f) {
+        if (f.no === 22 && f.wt === 2 && type === 28) return withValue(b, f, filterRelates(b, f.vs, f.ve));
+        if (f.no === 5 && f.wt === 2 && type === 3) return withValue(b, f, stripHeadline(b, f.vs, f.ve));
+      });
+    } catch (err) { return undefined; }   // 单个模块出错不影响其它模块
+  }
+
+  // TabReply.tab[*]（字段 5 的子消息本身）
+  function filterTabReply(b, s, e) {
+    return rebuild(b, fields(b, s, e), function (f) {
+      if (f.no === 1 && f.wt === 2) return withValue(b, f, filterTab(b, f.vs, f.ve));
     });
   }
 
-  function filterIntro(b, s, e) {
+  // Tab.tab_module
+  function filterTab(b, s, e) {
+    return rebuild(b, fields(b, s, e), function (f) {
+      if (f.no === 2 && f.wt === 2) return withValue(b, f, filterTabModule(b, f.vs, f.ve));
+    });
+  }
+
+  // TabModule.modules[] —— 2026-11-20 修正：module 直接就是 TabModule.2，之前多套了一层导致整个 tab 过滤空转
+  function filterTabModule(b, s, e) {
     return rebuild(b, fields(b, s, e), function (f) {
       if (f.no === 2 && f.wt === 2) {
         var m = filterModule(b, f.vs, f.ve);
+        if (m === undefined) return undefined;          // 模块解析失败，原样保留
         return m === null ? null : withValue(b, f, m);
       }
-    });
-  }
-
-  function filterTabModule(b, s, e) {
-    return rebuild(b, fields(b, s, e), function (f) {
-      if (f.no === 2 && f.wt === 2) return withValue(b, f, filterIntro(b, f.vs, f.ve));
-    });
-  }
-
-  function filterTab(b, s, e) {
-    return rebuild(b, fields(b, s, e), function (f) {
-      if (f.no === 1 && f.wt === 2) return withValue(b, f, filterTabModule(b, f.vs, f.ve));
     });
   }
 
   // 入口：ViewReply
   function filterViewReply(b, s, e) {
     return rebuild(b, fields(b, s, e), function (f) {
-      if (f.no === 5 && f.wt === 2) return withValue(b, f, filterTab(b, f.vs, f.ve));
+      if (f.no === 7) return null;                       // 视频页顶部广告卡容器
+      if (f.no === 5 && f.wt === 2) return withValue(b, f, filterTabReply(b, f.vs, f.ve));
     });
   }
 
