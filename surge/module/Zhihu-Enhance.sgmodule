@@ -1,0 +1,12 @@
+#!name=知乎广告补丁
+#!desc=移除知乎问题页回答流里服务端下发的广告插卡（ad_info）。补足常见去广告脚本没覆盖的接口，解析失败时原样放过。
+#!category=Advertisement
+#!system=ios
+#!homepage=https://github.com/LBurny/temple
+
+[Script]
+知乎回答流广告清理 = type=http-response,pattern=^https:\/\/api\.zhihu\.com\/questions\/\d+\/(?:feeds|follow-answers),requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/LBurny/temple/main/surge/script/zhihu-ad-strip.js
+知乎问题页回答列表广告清理 = type=http-response,pattern=^https:\/\/www\.zhihu\.com\/api\/v4\/questions\/\d+\/answers,requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/LBurny/temple/main/surge/script/zhihu-ad-strip.js
+
+[MITM]
+hostname = %APPEND% api.zhihu.com, www.zhihu.com
